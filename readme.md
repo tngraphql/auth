@@ -2,7 +2,7 @@
   <img src="https://phantrungnguyen.com/63026323.png" width="200px">
 </div>
 
-# @tngraphql/graphql
+# @tngraphql/auth
 
 [![npm-image]][npm-url] ![][typescript-image] [![license-image]][license-url]
 
