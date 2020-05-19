@@ -38,7 +38,7 @@ describe('auth', () => {
         await kernel.handle();
 
         app.singleton('db', () => getDb());
-        const ctx = await getCtx(app.use('db'));
+        const ctx = await getCtx(app.use('db'), app);
 
         app.config.set('auth', {
             defaults: {
@@ -94,7 +94,6 @@ describe('auth', () => {
             public name: string
         }
 
-        User.boot();
         userModel = User;
 
         authManager = new AuthManager(app, ctx);

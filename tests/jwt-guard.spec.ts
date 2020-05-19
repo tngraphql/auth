@@ -33,7 +33,7 @@ describe('JWT Guard', () => {
         await app.register(new HashServiceProvider(app));
         await kernel.handle();
         app.singleton('db', () => getDb());
-        ctx = await getCtx(app.use('db'));
+        ctx = await getCtx(app.use('db'), app);
 
         BaseModel.$adapter = new Adapter(app.use('db'))
 
@@ -50,7 +50,6 @@ describe('JWT Guard', () => {
 
         }
 
-        User.boot();
         userModel = User;
 
         app.config.set('auth', {
@@ -166,7 +165,7 @@ describe('JWT Guard', () => {
         const guard = authManager.guard();
         guard._loggedOut = false;
         const user = await guard.user();
-        const token = await user.createToken('new', []);
+        const token = await user.createToken('new', [], app);
     });
 
     it('should throw error when can\'t exist auth-public.key', async () => {
@@ -186,7 +185,7 @@ describe('JWT Guard', () => {
         const user = await provider.retrieveById(1);
         app.setBasePath(path.join(__dirname, 'app'));
         try {
-            await user.createToken('new', []);
+            await user.createToken('new', [], app);
         } catch (e) {
             expect(e.message).toBe(`${path.join(__dirname, 'app', 'auth-private.key')} does not exist or is not readable. fix: ts-node ace auth:keys`);
         }
@@ -195,7 +194,7 @@ describe('JWT Guard', () => {
     it('user create token using login userid', async () => {
         const guard = authManager.guard();
         const user = await guard.loginUsingId(1);
-        const token = await user.createToken('new', []);
+        const token = await user.createToken('new', [], app);
     });
 
     it('Validate a user\'s credentials.', async () => {
@@ -247,7 +246,7 @@ describe('JWT Guard', () => {
             await app.register(new HashServiceProvider(app));
             await kernel.handle();
             app.singleton('db', () => getDb());
-            ctx = await getCtx(app.use('db'));
+            ctx = await getCtx(app.use('db'), app);
 
             ctx.req.bearerToken = () => null;
 
@@ -266,7 +265,6 @@ describe('JWT Guard', () => {
 
             }
 
-            User.boot();
             userModel = User;
 
             app.config.set('auth', {

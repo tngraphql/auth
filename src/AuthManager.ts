@@ -134,7 +134,7 @@ export class AuthManager extends CreatesUserProviders implements AuthManagerCont
     public createJwtDriver(name: string, config: any) {
         return new JwtGuard((provider, request) => {
 
-            return new JwtVerify(provider).user(request);
+            return new JwtVerify(provider, this.app).user(request);
 
         }, this.createUserProvider(config.provider), this.ctx.req);
     }

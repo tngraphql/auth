@@ -5,18 +5,18 @@
  * Time: 3:23 PM
  */
 
-import {cleanup, getCtx, getDb, setup} from "./helpers";
 import {Application} from "@tngraphql/illuminate";
+import {cleanup, getCtx, getDb, setup} from "./helpers";
 import {GraphQLKernel} from "@tngraphql/illuminate/dist/Foundation";
 import {HashServiceProvider} from "@tngraphql/illuminate/dist/Hashing/HashServiceProvider";
 import {BaseModel} from "@tngraphql/lucid/build/src/Orm/BaseModel";
-import {Adapter} from "@tngraphql/lucid/build/src/Orm/Adapter";
 import {Auth} from "../src/Auth";
 import {column} from "@tngraphql/lucid/build/src/Orm/Decorators";
 import {AuthManager} from "../src/AuthManager";
 import {Authenticate} from "../src/Middleware/Authenticate";
 import {Context} from "@tngraphql/graphql/dist/resolvers/context";
 import {AuthServiceProvider} from "../src/AuthServiceProvider";
+import {Adapter} from "@tngraphql/lucid/build/src/Orm/Adapter/Adapter";
 
 describe('Authenticate | Middleware', () => {
     let app;
@@ -34,7 +34,7 @@ describe('Authenticate | Middleware', () => {
         await app.register(new HashServiceProvider(app));
         await kernel.handle();
         app.singleton('db', () => getDb());
-        ctx = await getCtx(app.use('db'));
+        ctx = await getCtx(app.use('db'), app);
 
         BaseModel.$adapter = new Adapter(app.use('db'))
 
@@ -51,7 +51,6 @@ describe('Authenticate | Middleware', () => {
 
         }
 
-        User.boot();
         userModel = User;
 
         app.config.set('auth', {
@@ -112,7 +111,6 @@ describe('Authenticate | Middleware', () => {
         });
 
         context.req.headers.authorization = ctx.req.bearerToken();
-
         new Authenticate().handle({context} as any, async () => {
         }, []);
     });

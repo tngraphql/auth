@@ -8,7 +8,6 @@
  * file that was distributed with this source code.
  */
 
-import {ConnectionConfigContract, DatabaseContract} from '@ioc:Adonis/Lucid/Database';
 import {join} from "path";
 import {Filesystem} from '@poppinss/dev-utils'
 import * as dotenv from 'dotenv'
@@ -17,10 +16,12 @@ import {Database} from '@tngraphql/lucid/build/src/Database';
 import {Profiler} from '@adonisjs/profiler/build/standalone'
 import {FakeLogger as Logger} from '@adonisjs/logger/build/standalone'
 import {BaseModel} from "@tngraphql/lucid/build/src/Orm/BaseModel";
-import {Adapter} from "@tngraphql/lucid/build/src/Orm/Adapter";
 import {column} from "@tngraphql/lucid/build/src/Orm/Decorators";
 import {HashManager} from "@tngraphql/illuminate/dist/Hashing/HashManager";
 import {Application, LoadConfiguration} from "@tngraphql/illuminate";
+import {getEmitter} from "@tngraphql/lucid/build/tests/helpers";
+import {Adapter} from "@tngraphql/lucid/build/src/Orm/Adapter/Adapter";
+import {DatabaseContract} from "@tngraphql/lucid/build/src/Contracts/Database/DatabaseContract";
 
 export const fs = new Filesystem(join(__dirname, 'tmp'))
 dotenv.config()
@@ -28,7 +29,7 @@ dotenv.config()
 /**
  * Returns config based upon DB set in environment variables
  */
-export function getConfig(): ConnectionConfigContract {
+export function getConfig() {
     switch (process.env.DB) {
         case 'sqlite':
             return {
@@ -111,7 +112,7 @@ export function getDb() {
         },
     }
 
-    return new Database(config, getLogger(), getProfiler()) as DatabaseContract
+    return new Database(config as any, getLogger(), getProfiler(), getEmitter()) as DatabaseContract
 }
 
 /**
@@ -132,7 +133,7 @@ export function getProfiler(enabled: boolean = false) {
     return new Profiler(__dirname, getLogger(), {enabled})
 }
 
-export async function getCtx(db) {
+export async function getCtx(db, app?) {
     BaseModel.$adapter = new Adapter(db)
     const {Auth} = require( "../src/Auth");
     class User extends Auth {
@@ -145,13 +146,11 @@ export async function getCtx(db) {
         public name: string
     }
 
-    User.boot();
-
     const model = User.query();
     model.where('id', 2);
     const user = await model.first()
 
-    const token = await user.createToken('name', ['createUser', 'updateUser']);
+    const token = await user.createToken('name', ['createUser', 'updateUser'], app);
 
     return {
         req: {

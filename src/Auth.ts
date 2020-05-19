@@ -20,8 +20,8 @@ export class Auth extends BaseModel implements Authenticatable {
 
     // protected _accessToken;
 
-    createToken(name: string, scopes: any = []) {
-        return new PersonalAccessTokenFactory(Application.getInstance()).make(this.getAuthIdentifier(), name, scopes);
+    createToken(name: string, scopes: any = [], app?: any) {
+        return new PersonalAccessTokenFactory(app || Application.getInstance()).make(this.getAuthIdentifier(), name, scopes);
     }
 
     // public withAccessToken(accessToken) {

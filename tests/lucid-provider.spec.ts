@@ -32,7 +32,7 @@ describe('Lucid | Provider', () => {
         await app.register(new HashServiceProvider(app));
         await kernel.handle();
         app.singleton('db', () => getDb());
-        ctx = await getCtx(app.use('db'));
+        ctx = await getCtx(app.use('db'), app);
 
         BaseModel.$adapter = new Adapter(app.use('db'))
 
@@ -54,7 +54,6 @@ describe('Lucid | Provider', () => {
             _rememberTokenName = 'rememberToken';
         }
 
-        User.boot();
         userModel = User;
 
         app.config.set('auth', {

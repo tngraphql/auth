@@ -1,9 +1,10 @@
 import {UserProviderContract} from "../Contract/UserProviderContract";
 import {Hasher} from "@tngraphql/illuminate/dist/Contracts/Hashing/Hasher";
 import {Authenticatable} from "../Contract/Authenticatable";
-import {DatabaseContract, QueryClientContract} from "@ioc:Adonis/Lucid/Database";
 import {GenericUser} from "../GenericUser";
 import {hash_equals} from "../utils";
+import {QueryClientContract} from "@tngraphql/lucid/build/src/Contracts/Database/QueryClientContract";
+import {DatabaseContract} from "@tngraphql/lucid/build/src/Contracts/Database/DatabaseContract";
 
 /**
  * Created by Phan Trung Nguyên.

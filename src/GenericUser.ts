@@ -37,8 +37,8 @@ export class GenericUser implements Authenticatable {
         return this.$attributes;
     }
 
-    createToken(name: string, scopes: any = []) {
-        return new PersonalAccessTokenFactory(Application.getInstance())
+    createToken(name: string, scopes: any = [], app?) {
+        return new PersonalAccessTokenFactory(app || Application.getInstance())
             .make(this.getAuthIdentifier(), name, scopes);
     }
 
