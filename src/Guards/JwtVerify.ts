@@ -32,17 +32,7 @@ export class JwtVerify {
             throw new Error(`${path.join(this.filesystem.basePath, 'auth-public.key')} does not exist or is not readable. fix: ts-node ace auth:keys`);
         }
 
-        const cert = await this.filesystem.get('auth-public.key');
-
-        let data;
-        try {
-            data = this.jwt.verify(request.bearerToken(), cert, {algorithm: 'RS256'});
-        } catch ({name, message}) {
-            if (name === 'TokenExpiredError') {
-                throw new ExpiredJwtTokenException();
-            }
-            throw new InvalidJwtTokenException(message);
-        }
+        let data = await this.getPsrRequestViaBearerToken(request);
 
         if (data) {
             const user = await this.provider.retrieveById(data.jti);
@@ -52,6 +42,25 @@ export class JwtVerify {
             }
         }
 
-        throw new InvalidJwtTokenException();
+        return;
+    }
+
+    protected async getPsrRequestViaBearerToken(request) {
+        if (!await this.filesystem.exists('auth-public.key')) {
+            throw new Error(`${path.join(this.filesystem.basePath, 'auth-public.key')} does not exist or is not readable. fix: ts-node ace auth:keys`);
+        }
+
+        const cert = await this.filesystem.get('auth-public.key');
+
+        try {
+            return this.jwt.verify(request.bearerToken(), cert, {algorithm: 'RS256'});
+        } catch ({name, message}) {
+            const handle = Application.getInstance().make('ExceptionHandler');
+            if (name === 'TokenExpiredError') {
+                handle.report(new ExpiredJwtTokenException());
+            } else {
+                handle.report(new InvalidJwtTokenException(message));
+            }
+        }
     }
 }
