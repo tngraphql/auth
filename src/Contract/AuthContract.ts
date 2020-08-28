@@ -7,9 +7,8 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+import {AuthManagerContract} from "./AuthManagerContract";
+import {StatefulGuardContract} from "./StatefulGuardContract";
 
-export interface AuthContract {
-    id(): string;
-
-    user(): any;
+interface AuthContract extends AuthManagerContract, StatefulGuardContract {
 }

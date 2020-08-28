@@ -25,8 +25,8 @@ export class AuthServiceProvider extends ServiceProvider {
                 }
             }
 
-            const manage = new AuthManager(self.app, this);
-            return manage.guard();
+            const manage = this.$guard = new AuthManager(self.app, this);
+            return this.$guard;
         });
     }
 

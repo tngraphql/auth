@@ -100,6 +100,12 @@ describe('JWT Guard', () => {
         app.setBasePath(__dirname);
     });
 
+    it('proxy guard', async () => {
+        await authManager.attempt({name: 'nguyen', password: 'nguyen'});
+
+        expect(await authManager.id()).toBe(1);
+    });
+
     it('Attempt to authenticate a user using the given credentials.', async () => {
         const guard = authManager.guard();
         const check = await guard.attempt({name: 'nguyen', password: 'nguyen'});

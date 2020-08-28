@@ -17,6 +17,8 @@ export class JwtGuard implements StatefulGuardContract {
 
     protected _loggedOut: boolean = false;
 
+    protected $requestUser: any;
+
     constructor(
         public callback: Function,
         public provider: UserProviderContract,
@@ -25,7 +27,7 @@ export class JwtGuard implements StatefulGuardContract {
     ) {
     }
 
-    async attempt(credentials?: any): Promise<boolean> {
+    public async attempt(credentials?: any): Promise<boolean> {
         const user = await this.provider.retrieveByCredentials(credentials);
 
         this._lastAttempted = user;
@@ -56,7 +58,7 @@ export class JwtGuard implements StatefulGuardContract {
         return user ? user.getAuthIdentifier() : null;
     }
 
-    login(user: Authenticatable): void {
+    public login(user: Authenticatable): void {
         this.setUser(user);
     }
 
@@ -94,7 +96,13 @@ export class JwtGuard implements StatefulGuardContract {
             return this._user;
         }
 
-        const user = await this.callback(this.provider, this.request);
+        if (!this.$requestUser) {
+            this.$requestUser = this.callback(this.provider, this.request);
+        }
+
+        const user = await this.$requestUser;
+
+        this.$requestUser = null;
 
         if (!user) {
             return null;
@@ -123,7 +131,7 @@ export class JwtGuard implements StatefulGuardContract {
         return user && this.provider.validateCredentials(user, credentials);
     }
 
-    getGenericUser(user) {
+    public getGenericUser(user) {
         if (!user) {
             return null;
         }

@@ -8,6 +8,7 @@
  * file that was distributed with this source code.
  */
 import { GuardContract } from './GuardContract';
+import {Authenticatable} from "./Authenticatable";
 
 export interface AuthManagerContract {
 

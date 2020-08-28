@@ -16,6 +16,8 @@ export class RequestGuard extends Macroable implements GuardContract {
     protected static macros = {}
     protected static getters = {}
 
+    protected $requestUser;
+
     protected _user: Authenticatable;
 
     constructor(
@@ -34,10 +36,9 @@ export class RequestGuard extends Macroable implements GuardContract {
     }
 
     public async id() {
-        if (await this.user()) {
-            return (await this.user()).getAuthIdentifier();
-        }
-        return null;
+        const user = await this.user();
+
+        return user ? user.getAuthIdentifier() : null;
     }
 
     /**
@@ -54,9 +55,19 @@ export class RequestGuard extends Macroable implements GuardContract {
             return this._user;
         }
 
-        this._user = await this.callback(this.request, this.provider);
+        if (!this.$requestUser) {
+            this.$requestUser = this.callback(this.provider, this.request);
+        }
 
-        return this._user;
+        const user = await this.$requestUser;
+
+        this.$requestUser = null;
+
+        if (!user) {
+            return null;
+        }
+
+        return this._user = user;
     }
 
     public async validate(credentials: any[]) {

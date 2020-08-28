@@ -30,6 +30,35 @@ export class AuthManager extends CreatesUserProviders implements AuthManagerCont
 
     constructor(public app: ApplicationContract, public ctx: any) {
         super();
+
+        const p = this;
+
+        return new Proxy(p, {
+            get(target: any, key: PropertyKey, receiver: any): any {
+                if (Reflect.has(p, key)) {
+                    return Reflect.get(target, key, receiver);
+                }
+
+                const a = [
+                    'attempt',
+                    'check',
+                    'guest',
+                    'id',
+                    'login',
+                    'loginUsingId',
+                    'logout',
+                    'setUser',
+                    'user',
+                    'validate',
+                    'getGenericUser',
+                ]
+                if (typeof key === "string" && a.includes(key as string)) {
+                    return Reflect.get(p.guard(), key, receiver).bind(p.guard());
+                }
+
+                return Reflect.get(target, key, receiver);
+            }
+        })
     }
 
     public plush() {
