@@ -17,13 +17,16 @@ export class AuthServiceProvider extends ServiceProvider {
     public boot(): void {
         const self = this;
         Context.getter('auth', function () {
+            if (this.$guard) {
+                return this.$guard;
+            }
             this.req.bearerToken = () => {
                 try {
                     return this.req.headers.authorization.replace(/^(Bearer\s)/g, '');
                 } catch (e) {
                     return null;
                 }
-            }
+            };
 
             const manage = this.$guard = new AuthManager(self.app, this);
             return this.$guard;
