@@ -27,9 +27,11 @@ export class PersonalAccessTokenFactory {
 
         const jwtid = String(identifier);
 
+        const exp = this.app.config.get('auth.expired', 60) * 60;
+
         const data = {
             scopes,
-            exp: time() + (60 * 24 * 30)
+            exp: time() + exp
         }
 
         for (let key of Object.keys(data)) {
