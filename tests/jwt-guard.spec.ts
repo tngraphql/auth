@@ -175,26 +175,33 @@ describe('JWT Guard', () => {
     });
 
     it('should throw error when can\'t exist auth-public.key', async () => {
+        expect.assertions(1);
+
+        const root = process.cwd();
+        process.chdir(path.join(__dirname));
+
         const guard = authManager.guard();
         guard._loggedOut = false;
         try {
             await guard.user();
         } catch (e) {
-            expect(e.message).toBe(`${path.join(__dirname, 'app', 'auth-public.key')} does not exist or is not readable. fix: ts-node ace auth:keys`);
+            expect(e.message).toBe(`${path.join(__dirname, 'auth-public.key')} does not exist or is not readable. fix: ts-node ace auth:keys`);
         }
+        process.chdir(root)
     });
 
     it('should throw error when can\'t exist auth-private.key', async () => {
         expect.assertions(1);
-
+        const root = process.cwd();
+        process.chdir(path.join(__dirname));
         const provider: LucidUserProvider = authManager.createUserProvider();
         const user = await provider.retrieveById(1);
-        app.setBasePath(path.join(__dirname, 'app'));
         try {
             await user.createToken('new', [], app);
         } catch (e) {
-            expect(e.message).toBe(`${path.join(__dirname, 'app', 'auth-private.key')} does not exist or is not readable. fix: ts-node ace auth:keys`);
+            expect(e.message).toBe(`${path.join(__dirname, 'auth-private.key')} does not exist or is not readable. fix: ts-node ace auth:keys`);
         }
+        process.chdir(root)
     });
 
     it('user create token using login userid', async () => {

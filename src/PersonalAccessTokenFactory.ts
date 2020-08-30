@@ -17,7 +17,7 @@ export class PersonalAccessTokenFactory {
     public filesystem: Filesystem;
 
     constructor(public app: Application) {
-        this.filesystem = new Filesystem(this.app.basePath());
+        this.filesystem = new Filesystem(process.cwd());
     }
 
     public async make(identifier: any, name: string, scopes = {}) {

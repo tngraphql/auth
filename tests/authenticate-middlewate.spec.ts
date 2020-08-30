@@ -95,6 +95,9 @@ describe('Authenticate | Middleware', () => {
 
         authManager = new AuthManager(app, ctx);
     });
+    afterAll(async () => {
+        await cleanup();
+    })
 
     beforeEach(async () => {
         authManager.plush();
@@ -111,11 +114,13 @@ describe('Authenticate | Middleware', () => {
         });
 
         context.req.headers.authorization = ctx.req.bearerToken();
-        new Authenticate().handle({context} as any, async () => {
+        await new Authenticate().handle({context} as any, async () => {
         }, []);
     });
 
     it('should throw when no authorization', async () => {
+        expect.assertions(3);
+
         await app.register(new AuthServiceProvider(app));
         const context: any = new Context({
             req: {

@@ -20,7 +20,7 @@ export class KeysCommand extends BaseCommand {
     public length: number;
 
     async handle(): Promise<any> {
-        const filesystem = new Filesystem((this.application as any).basePath());
+        const filesystem = new Filesystem(process.cwd());
 
         let [publicKey, privateKey] = [
             path.join(filesystem.basePath, './auth-public.key'),

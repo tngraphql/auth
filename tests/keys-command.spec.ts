@@ -8,11 +8,21 @@ import {Application, ConsoleKernel} from "@tngraphql/illuminate";
 import {join} from "path";
 import {Filesystem} from "@poppinss/dev-utils/build";
 import {KeysCommand} from "../src/command/KeysCommand";
+import * as fssystem from "fs";
 
-const fs = new Filesystem(join(__dirname, './cammand'))
+const fs = new Filesystem(join(__dirname, './command'))
 
 describe('Keys Command', () => {
+    let root;
+    beforeEach(async () => {
+        if (!await fs.exists(join(__dirname, './command'))) {
+            fssystem.mkdirSync(join(__dirname, './command'), 755);
+        }
+        root = process.cwd();
+        process.chdir(join(__dirname, './command'));
+    })
     afterEach(async () => {
+        process.chdir(root)
         jest.resetModules();
         await fs.cleanup();
     });

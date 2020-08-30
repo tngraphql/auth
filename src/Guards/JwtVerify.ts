@@ -17,7 +17,7 @@ export class JwtVerify {
     public jwt = require('jsonwebtoken');
 
     constructor(public provider, app) {
-        this.filesystem = new Filesystem(app.basePath());
+        this.filesystem = new Filesystem(process.cwd());
     }
 
     public user(request): Promise<Authenticatable> {
