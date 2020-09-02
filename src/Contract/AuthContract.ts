@@ -10,5 +10,5 @@
 import {AuthManagerContract} from "./AuthManagerContract";
 import {StatefulGuardContract} from "./StatefulGuardContract";
 
-interface AuthContract extends AuthManagerContract, StatefulGuardContract {
+export interface AuthContract extends AuthManagerContract, StatefulGuardContract {
 }
